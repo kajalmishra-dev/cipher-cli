@@ -1,51 +1,65 @@
-## PyEncoder
-PyEncoder is a simple and beginner-friendly Python command-line tool that lets you encode and decode secret messages using symbol substitution.
+# CipherCLI
 
-### Features
-* Encode plain text into disguised symbols
-* Decode symbols back into readable text
-* Fully modular with reusable character map
-* Requires only Python (no extra libraries)
-  
-### Project Structure
-PyEncoder/
-├── encoder.py     # CLI script to encode messages
-├── decoder.py     # CLI script to decode messages
-└── mapping.py     # Shared character-symbol mapping
+CipherCLI is a lightweight Python command-line tool to encode and decode text using character substitution.
 
-### How to Run
-Requirements: Python 3.x installed
-__To encode a message:__
-```bash
-python encoder.py
+---
+
+## Features
+
+* Encode plain text into symbols
+* Decode symbols back to readable text
+* Modular and clean structure
+* CLI-based usage (argument-driven)
+
+---
+
+## Project Structure
+
 ```
-__To decode a message:__
-```bash
-python decoder.py
+cipher-cli/
+├── __init__.py
+├── encoder.py
+├── decoder.py
+├── mapping.py
+└── cli.py
 ```
-__Example:__
-* Input: `hello world`
-* Encoded: `&#$+$ 7+2$)`
-* Decoded: `hello world`
 
-### How It Works
-The program uses a character substitution dictionary like this:
-```python
-char_map = {
-    'a': '@',
-    'e': '#',
-    'l': '$',
-    'o': '+'
-}
+---
+
+## Usage
+
+Run using module mode:
+
 ```
-Each character is replaced by a symbol when encoding, and reversed during decoding using a reverse map.
+python -m pyencoder.cli encode "hello"
+python -m pyencoder.cli decode "&#+$+"
+```
 
-### Learning Goals
-This project helps reinforce:
-* String and dictionary manipulation
-* Writing modular Python code
-* Reading user input in the CLI
-* Reversible encoding logic
-  
-### License
-This project is open-source and available under the __MIT License__.
+---
+
+## Example
+
+| Input       | Output          |
+| ----------- | --------------- |
+| hello world | encoded symbols |
+| encoded     | decoded text    |
+
+---
+
+## Learning Objectives
+
+* CLI argument handling in Python
+* Modular code organization
+* String & dictionary manipulation
+
+---
+
+## Requirements
+
+* Python 3.x
+
+---
+
+## License
+
+MIT License
