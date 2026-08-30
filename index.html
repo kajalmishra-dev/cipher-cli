@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cipher-cli</title>
+  <style>
+    :root {
+      --ink: #1c1814;
+      --paper: #f3ead6;
+      --rule: #d8c9a8;
+      --gold: #8a5a12;
+      --stamp: #6b2d1a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+      background:
+        radial-gradient(ellipse at top, #fff8e8, var(--paper) 55%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 27px,
+          rgba(138, 90, 18, 0.05) 28px
+        );
+      color: var(--ink);
+    }
+
+    main {
+      width: min(720px, calc(100% - 32px));
+      margin: 40px auto 64px;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 10px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      letter-spacing: 0.04em;
+    }
+
+    .mark {
+      font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--stamp);
+    }
+
+    label {
+      display: block;
+      font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: var(--gold);
+    }
+
+    textarea,
+    .out {
+      width: 100%;
+      min-height: 140px;
+      padding: 14px 16px;
+      border: 1px solid var(--ink);
+      background: #fffdf6;
+      color: var(--ink);
+      font: 1.05rem/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 28px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+
+    button.ghost {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    button:hover { opacity: 0.88; }
+    button:active { transform: translateY(1px); }
+
+    .out {
+      min-height: 120px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .out:empty::before {
+      content: "Result shows up here.";
+      color: #8a8070;
+    }
+
+    .hint {
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--rule);
+      font-size: 0.92rem;
+      color: #4a4338;
+    }
+
+    .map {
+      margin-top: 8px;
+      font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: #5c5346;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>cipher-cli</h1>
+      <span class="mark">substitution desk</span>
+    </header>
+
+    <label for="input">Message</label>
+    <textarea id="input" placeholder="Type something… hello world"></textarea>
+
+    <div class="actions">
+      <button type="button" id="encode">Encode</button>
+      <button type="button" id="decode">Decode</button>
+      <button type="button" class="ghost" id="copy">Copy result</button>
+      <button type="button" class="ghost" id="clear">Clear</button>
+    </div>
+
+    <label>Result</label>
+    <div class="out" id="output" aria-live="polite"></div>
+
+    <p class="hint">Same letter swap the CLI uses. Letters become symbols; everything else stays as-is.</p>
+    <p class="map">a@ b8 c( d) e# f! g9 h&amp; i* j% k&lt; l$ m^ n~ o+ p0 q1 r2 s3 t4 u5 v6 w7 x= y? z/</p>
+  </main>
+
+  <script>
+    const CHAR_MAP = {
+      a: "@", b: "8", c: "(", d: ")", e: "#",
+      f: "!", g: "9", h: "&", i: "*", j: "%",
+      k: "<", l: "$", m: "^", n: "~", o: "+",
+      p: "0", q: "1", r: "2", s: "3", t: "4",
+      u: "5", v: "6", w: "7", x: "=", y: "?", z: "/"
+    };
+    const REVERSE_MAP = Object.fromEntries(
+      Object.entries(CHAR_MAP).map(([k, v]) => [v, k])
+    );
+
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+
+    function encode(message) {
+      return [...message.toLowerCase()]
+        .map((ch) => CHAR_MAP[ch] ?? ch)
+        .join("");
+    }
+
+    function decode(message) {
+      return [...message]
+        .map((ch) => REVERSE_MAP[ch] ?? ch)
+        .join("");
+    }
+
+    function show(text) {
+      output.textContent = text;
+    }
+
+    document.getElementById("encode").onclick = () => show(encode(input.value));
+    document.getElementById("decode").onclick = () => show(decode(input.value));
+    document.getElementById("clear").onclick = () => {
+      input.value = "";
+      output.textContent = "";
+      input.focus();
+    };
+    document.getElementById("copy").onclick = async () => {
+      const text = output.textContent;
+      if (!text) return;
+      await navigator.clipboard.writeText(text);
+    };
+  </script>
+</body>
+</html>
