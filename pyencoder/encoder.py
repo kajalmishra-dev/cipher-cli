@@ -1,6 +1,6 @@
 # encoder
 
-from .mapping import char_map
+from mapping import char_map
 
 def encode(message):
     message = message.lower()

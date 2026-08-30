@@ -1,6 +1,6 @@
 # decoder
 
-from .mapping import char_map
+from mapping import char_map
 
 # Reverse the mapping
 reverse_map = {v: k for k, v in char_map.items()}
