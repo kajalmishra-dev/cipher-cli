@@ -1,7 +1,7 @@
 # cipher-cli
 A small substitution cipher - encode text into symbols, then decode it back. Same mapping in a Python CLI and a simple web page.
 
-![cipher-cli web demo](linkedin-demo/sample.png)
+![cipher-cli web demo](demo/sample.png)
 
 ## Try the web page
 Open `index.html` in a browser, or serve the folder:
